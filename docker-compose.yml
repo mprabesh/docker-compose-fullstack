@@ -14,6 +14,8 @@ services:
       - REDIS_HOST=redis
       - POSTGRES_HOST=db
       - POSTGRES_PASSWORD=example
+    volumes:
+      - ./database:/var/lib/postgresql/data
     expose:
       - 8080
     depends_on:
@@ -48,3 +50,6 @@ services:
       - frontend
       - backend
     container_name: webserver
+
+volumes:
+  database:
