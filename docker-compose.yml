@@ -1,0 +1,50 @@
+services:
+  
+  # Frontend service
+  frontend:
+    image: frontend-app:v2
+    expose:
+      - 5000
+    container_name: frontend
+
+  # Backend + Redis services
+  backend:
+    image: backend-app
+    environment:
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=db
+      - POSTGRES_PASSWORD=example
+    expose:
+      - 8080
+    depends_on:
+      - redis
+      - db
+    container_name: backend
+
+
+  redis:
+    image: redis
+    container_name: redis
+
+  # Database service
+  db:
+    image: postgres:13.2-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: example
+    container_name: db_backend
+
+
+  # Nginx service
+  proxy:
+    image: nginx
+    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    privileged: true
+    ports:
+      - 80:80
+    depends_on:
+      - frontend
+      - backend
+    container_name: webserver
